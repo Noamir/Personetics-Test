@@ -45,6 +45,25 @@ pipeline {
             }
         }
 
-  
-    }
+        stage("deploy") {
+            when {
+                branch "release*"
+            }
+            steps {
+                script {
+                    ansiblePlaybook(
+                            playbook: 'deployment/deploy.yml',
+                            inventory: 'deployment/inventory',
+                            colorized: true,
+                            additionalParameters: '--error-if-no-plays-matched',
+                            extras: "-e image=${env.IMAGE} " +
+                                    "-e server_ip=${env.SERVER_IP} " +
+                                    "-e project_name=${env.PROJ} " +
+                                    "-vv",
+                            credentialsId: 'test-key'
+                    )
+                }
+            }
+        }
+       }
 }
