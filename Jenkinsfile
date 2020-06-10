@@ -45,51 +45,6 @@ pipeline {
             }
         }
 
-        stage("deploy") {
-            when {
-                branch "release*"
-            }
-            steps {
-                script {
-                    ansiblePlaybook(
-                            playbook: 'deployment/deploy.yml',
-                            inventory: 'deployment/inventory',
-                            colorized: true,
-                            additionalParameters: '--error-if-no-plays-matched',
-                            extras: "-e image=${env.IMAGE} " +
-                                    "-e server_ip=${env.SERVER_IP} " +
-                                    "-e project_name=${env.PROJ} " +
-                                    "-vv",
-                            credentialsId: 'test-key'
-                    )
-                }
-            }
-        }
-
-        stage("test-deployment") {
-            when {
-                branch "release*"
-            }
-            steps {
-                script {
-                    sleep 30
-                    sh "curl http://${env.SERVER_IP}:8080/greeting?name=katsok"
-                }
-            }
-        }
-
-
-    }
-    post {
-        always {
-            script {
-                def status = "${env.BUILD_TAG} - ${currentBuild.currentResult}"
-                def body = """
-Build: ${currentBuild.displayName}
-Result: ${currentBuild.currentResult}
-"""
-                mail body: body, subject: status, to: 'katsok@personetics.com'
-            }
-        }
+  
     }
 }
