@@ -24,7 +24,7 @@ pipeline {
                 docker {
                     image "maven:3-jdk-8-slim"
                     args "-v \$HOME/.m2:/root/.m2"
-                    label 'docker'
+                    
                 }
             }
             steps {
