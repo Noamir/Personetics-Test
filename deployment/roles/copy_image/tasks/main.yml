@@ -21,3 +21,7 @@
     cmd: "docker load -i {{ project_path }}/{{ image }}.tar"
   tags:
     - copy_image
+    
+- name: Run docker image
+  command:
+    cmd: "docker container run -d -p 8080:8080 {{ image }}"
