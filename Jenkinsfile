@@ -46,9 +46,7 @@ pipeline {
         }
 
         stage("deploy") {
-            when {
-                branch "release*"
-            }
+            
             steps {
                 script {
                     ansiblePlaybook(
@@ -59,9 +57,18 @@ pipeline {
                             extras: "-e image=${env.IMAGE} " +
                                     "-e server_ip=${env.SERVER_IP} " +
                                     "-e project_name=${env.PROJ} " +
-                                    "-vv",
-                            credentialsId: 'test-key'
+                                    "-vv"
+                           
                     )
+                }
+            }
+        }
+        
+     stage("test-deployment") {
+            steps {
+                script {
+                    sleep 30
+                    sh "curl http://${env.SERVER_IP}:8080/greeting?name=katsok"
                 }
             }
         }
