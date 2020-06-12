@@ -24,7 +24,6 @@ pipeline {
                 docker {
                     image "maven:3-jdk-8-slim"
                     args "-v \$HOME/.m2:/root/.m2"
-                    
                 }
             }
             steps {
@@ -46,7 +45,9 @@ pipeline {
         }
 
         stage("deploy") {
-            
+            when {
+                branch "release*"
+            }
             steps {
                 script {
                     ansiblePlaybook(
@@ -57,14 +58,17 @@ pipeline {
                             extras: "-e image=${env.IMAGE} " +
                                     "-e server_ip=${env.SERVER_IP} " +
                                     "-e project_name=${env.PROJ} " +
-                                    "-vv"
-                           
+                                    "-vv",
+                            credentialsId: 'test-key'
                     )
                 }
             }
         }
-        
-     stage("test-deployment") {
+
+        stage("test-deployment") {
+            when {
+                branch "release*"
+            }
             steps {
                 script {
                     sleep 30
@@ -72,5 +76,19 @@ pipeline {
                 }
             }
         }
-       }
+
+
+    }
+    post {
+        always {
+            script {
+                def status = "${env.BUILD_TAG} - ${currentBuild.currentResult}"
+                def body = """
+Build: ${currentBuild.displayName}
+Result: ${currentBuild.currentResult}
+"""
+                mail body: body, subject: status, to: 'katsok@personetics.com'
+            }
+        }
+    }
 }
