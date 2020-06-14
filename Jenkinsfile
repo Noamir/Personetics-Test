@@ -3,7 +3,7 @@ pipeline {
     agent { label "master" }
      triggers {
         githubPush()
-
+     }
     options {
         ansiColor('xterm')
     }
