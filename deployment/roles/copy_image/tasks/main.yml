@@ -24,4 +24,10 @@
     
 - name: Run docker image
   command:
-    cmd: "docker container run -d -p 8080:8080 {{ image }}"
+    cmd: "docker container run -d --name web-server -p 8080:8080 {{ image }}"
+    
+#- name: Update docker image
+ # command:
+  #  cmd: "docker container stop web-server"
+  #  cmd: "docker container rm web-server"
+  #  cmd: "docker container run -d --name web-server -p 8080:8080 {{ image }}"
